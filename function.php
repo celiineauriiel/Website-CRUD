@@ -18,8 +18,7 @@ if ($db_host_env && $db_user_env && $db_name_env) {
     // Untuk koneksi ke Cloud SQL dari Cloud Run, biasanya menggunakan Unix Socket.
     // Path socket: /cloudsql/INSTANCE_CONNECTION_NAME
     // mysqli_connect() menerima null untuk host jika menggunakan socket.
-    $socket_path = '/cloudsql/' . $db_host_env;
-    $koneksi = mysqli_connect(null, $db_user_env, $db_pass_env, $db_name_env, null, $socket_path);
+    $koneksi = mysqli_connect($db_host_env, $db_user_env, $db_pass_env, $db_name_env, 3306);
 } else {
     // Fallback untuk lingkungan lokal (jika environment variables tidak di-set)
     // Anda bisa menyesuaikan ini jika nama variabel lokal berbeda atau jika Anda ingin error jika variabel cloud tidak ada.

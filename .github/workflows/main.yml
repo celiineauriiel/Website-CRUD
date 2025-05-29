@@ -43,6 +43,7 @@ jobs:
       run: docker push ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
     - name: Deploy to Cloud Run
+      id: deploy
       uses: google-github-actions/deploy-cloudrun@v2
       with:
         service: ${{ env.SERVICE_NAME }}
@@ -65,3 +66,7 @@ jobs:
         # Jika Cloud Run dan Cloud SQL dalam project yang sama, ini biasanya sudah terkonfigurasi.
         # Jika tidak, Anda mungkin perlu menambahkan:
         # cloudsql_instances: ${{ env.DB_HOST }} # Ini adalah instance connection name
+
+    - name: Show deployed URL
+      run: |
+        echo "🚀 Deployed to: ${{ steps.deploy.outputs.url }}"
