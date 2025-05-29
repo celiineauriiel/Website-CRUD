@@ -1,32 +1,130 @@
+/* Pastikan warna latar belakang sama dengan style.css */
 body {
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    background-color: #00adb5;
+    background-color: #E0FFFF; /* Azure - Biru langit muda */
+    background-image: none;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    font-family: 'Poppins', sans-serif; /* Poppins untuk teks umum */
+}
+
+.container.d-flex.justify-content-center.align-items-center.min-vh-100 {
+    padding: 20px;
+}
+
+.card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    background-color: #fff; /* Pastikan background card putih */
+}
+
+/* Warna Judul (HEADER CARD) - Menggunakan warna navy konsisten */
+.card-title {
+    font-family: 'Righteous', cursive; /* Menggunakan font Righteous untuk judul */
+    color: #001F3F !important; /* True Navy / Midnight Blue (konsisten dengan style.css) */
+    font-size: 2.5rem; /* Ukuran font lebih besar untuk judul */
+    letter-spacing: 2px; /* Memberikan sedikit jarak antar huruf */
     text-transform: uppercase;
 }
 
-.warnanavbar {
-    background-color: gray;
+p.text-secondary {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300;
+    color: #6c757d !important;
 }
 
-.navbar-brand {
-    font-family: 'Righteous', cursive;
+.form-label {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600; /* Tebal sedikit */
+    color: #343a40; /* Warna teks gelap */
+    text-transform: uppercase; /* Huruf kapital */
+    font-size: 0.9rem;
 }
 
-.login {
-    border: 0;
-    height: 500px;
-    margin: auto;
+.input-group-text {
+    background-color: #e9ecef; /* Warna background ikon */
+    border: 1px solid #ced4da;
+    border-right: none;
+    color: #495057;
 }
 
-.login h4 {
-    margin-top: 100px;
+.form-control {
+    border-left: none;
+    border-color: #ced4da;
 }
 
-form .form-group input {
-    margin: auto;
+.form-check-label {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    text-transform: uppercase; /* Huruf kapital */
+    font-size: 0.9rem;
+    color: #495057;
 }
 
-form .user input {
-    margin: auto;
-    margin-top: 70px;
+/* Warna tombol utama (LOGIN/REGISTER) */
+.btn-primary {
+    background-color: #001F3F; /* True Navy / Midnight Blue (konsisten) */
+    border-color: #001F3F;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    padding: 0.75rem 1.25rem;
+}
+
+.btn-primary:hover {
+    background-color: #00182E; /* Warna hover yang sedikit lebih gelap */
+    border-color: #00182E;
+}
+
+/* Warna tombol secondary (REGISTER di login page, LOGIN di register page) */
+.btn-secondary {
+    background-color: #6c757d !important; /* Warna abu-abu standar Bootstrap secondary */
+    border-color: #6c757d !important;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600; /* Samakan dengan btn-primary */
+    text-transform: uppercase; /* Samakan dengan btn-primary */
+    font-size: 1.1rem; /* Samakan dengan btn-primary */
+    padding: 0.75rem 1.25rem; /* Samakan dengan btn-primary */
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268 !important;
+    border-color: #545b62 !important;
+}
+
+
+/* Styling untuk link "BELUM PUNYA AKUN?" / "SUDAH PUNYA AKUN?" */
+a.text-primary.fw-bold {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    color: #001F3F !important; /* Gunakan warna navy */
+}
+
+a.text-primary.fw-bold:hover {
+    color: #00182E !important;
+}
+
+.alert-danger {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+}
+
+/* Styling untuk tanda (*) merah pada label */
+.form-label .text-danger {
+    font-size: 1.2em; /* Sedikit lebih besar dari teks label normal */
+    vertical-align: middle; /* Posisikan di tengah vertikal */
+    line-height: 1; /* Pastikan tinggi baris tidak mengganggu */
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 30px !important;
+    }
+    .card-title {
+        font-size: 2rem;
+    }
 }

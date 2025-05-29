@@ -1,30 +1,248 @@
-body{
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+/* Import font dari Google Fonts (Righteous untuk judul, Poppins untuk body) */
+body {
+    font-family: 'Poppins', sans-serif; /* Poppins untuk teks umum */
+    background-color: #E0FFFF; /* Azure - Biru langit yang sangat muda, konsisten dengan login page */
+    background-image: none;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    padding-top: 58px; /* Dikurangi lagi agar lebih dekat ke navbar */
 }
 
-.navbar-brand{
-    font-family: 'Righteous', cursive;
+.navbar.fixed-top {
+    z-index: 1030;
 }
 
-.link a{
-    display: inline-block;
-    margin-top: 20px;
-    margin-right: 10px;
+/* Warna Biru Navbar dan Judul (NAVY ASLI) */
+.navbar.bg-primary,
+.modal-header.bg-primary {
+    background-color: #001F3F !important; /* True Navy / Midnight Blue */
+}
+
+/* Font Judul (Navbar Brand, Card Title, Modal Title) - RIGHTEOUS */
+.navbar-brand,
+.card-title,
+.modal-title {
+    font-family: 'Righteous', cursive; /* Menggunakan kembali Righteous untuk judul */
+    font-weight: normal; /* Righteous tidak punya bobot lain selain normal */
+    color: #001F3F !important; /* Gunakan warna biru navy yang sama untuk teks judul */
+    font-size: 2.2rem; /* Ukuran font disesuaikan agar cocok dengan Righteous */
+    letter-spacing: 2px; /* Kembalikan letter-spacing seperti sebelumnya untuk Righteous */
+    text-transform: uppercase;
+}
+
+/* Kustomisasi font size untuk navbar brand */
+.navbar-brand {
+    font-size: 1.5rem;
+    color: #fff !important; /* Warna teks navbar brand putih */
+}
+
+/* Kustomisasi font size untuk card title */
+.card-title {
+    font-size: 2.5rem;
+    color: #001F3F !important; /* Warna teks judul kartu ikut biru navy */
+}
+
+/* Simetris Navbar Items */
+.navbar-nav .nav-item .nav-link {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    font-family: 'Poppins', sans-serif; /* Tetap Poppins untuk item menu */
+    font-weight: 400;
+}
+
+.navbar-nav .nav-item .nav-link.btn {
+    padding: 0.375rem 0.75rem;
+    line-height: 1.5;
+}
+
+.nav-link.active {
+    font-weight: 600;
+}
+
+.nav-link.btn-danger {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    font-weight: 600;
+}
+
+.nav-link.btn-danger:hover {
+    background-color: #c82333 !important;
+    border-color: #c82333 !important;
+}
+
+.card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    background-color: #fff;
+}
+
+p.text-secondary {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300;
+    color: #6c757d !important;
+}
+
+.btn-primary {
+    background-color: #001F3F; /* Konsisten dengan warna biru navy baru */
+    border-color: #001F3F;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    padding: 0.75rem 1.25rem;
+}
+
+.btn-primary:hover {
+    background-color: #00182E; /* Warna hover yang sedikit lebih gelap dari navy */
+    border-color: #00182E;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    padding: 0.75rem 1.25rem;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #218838;
+}
+
+/* Styling untuk tabel */
+#data {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+}
+
+#data thead th {
+    font-weight: 600;
+    text-transform: uppercase;
     color: #fff;
+    background-color: #001F3F; /* Warna header tabel diubah ke navy */
 }
 
-.link a:hover .bi-facebook{
-    color: #3b5998;
+#data tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
 }
 
-.link a:hover .bi-github{
-    color: #ccc;
+.img-thumbnail {
+    border: 1px solid #dee2e6;
+    padding: 0.25rem;
+    background-color: #fff;
 }
 
-.link a:hover .bi-instagram{
-    color: #C13584;
+.btn-info {
+    background-color: #17a2b8 !important;
+    border-color: #17a2b8 !important;
+    font-size: 0.8rem;
+    padding: 0.375rem 0.6rem;
+}
+.btn-info:hover {
+    background-color: #138496 !important;
+    border-color: #138496 !important;
 }
 
-.link a:hover .bi-twitter{
-    color: #1DA1F2;
+.btn-warning {
+    background-color: #ffc107 !important;
+    border-color: #ffc107 !important;
+    font-size: 0.8rem;
+    padding: 0.375rem 0.6rem;
+}
+.btn-warning:hover {
+    background-color: #e0a800 !important;
+    border-color: #e0a800 !important;
+}
+
+.btn-danger {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    font-size: 0.8rem;
+    padding: 0.375rem 0.6rem;
+}
+.btn-danger:hover {
+    background-color: #c82333 !important;
+    border-color: #c82333 !important;
+}
+
+/* Footer styling */
+.container-fluid.bg-dark {
+    background-color: #343a40 !important; /* Background tetap gelap */
+    font-family: 'Poppins', sans-serif;
+}
+
+.container-fluid.bg-dark h5 {
+    color: #FFFFFF !important; /* <--- PERUBAHAN DI SINI! Warna judul footer jadi putih */
+    font-family: 'Righteous', cursive; /* Pastikan font Righteous */
+    font-weight: normal;
+    letter-spacing: 2px;
+}
+
+.container-fluid.bg-dark p {
+    font-weight: 300;
+    color: #ADB5BD !important; /* Warna teks paragraf footer diatur agar lebih terbaca */
+}
+
+/* KODE INI DIHAPUS DARI FOOTER SESUAI PERMINTAAN */
+/* .container-fluid.bg-dark .small.text-muted {
+    font-size: 0.8rem;
+    color: #ADB5BD !important;
+} */
+
+/* Styling untuk tombol Kembali di addData.php */
+.btn-secondary {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600; /* Samakan dengan btn-primary */
+    text-transform: uppercase; /* Samakan dengan btn-primary */
+    font-size: 1.1rem; /* Samakan dengan btn-primary */
+    padding: 0.75rem 1.25rem; /* Samakan dengan btn-primary */
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268 !important;
+    border-color: #545b62 !important;
+}
+
+/* SweetAlert2 Custom Styling */
+.swal2-confirm.btn.btn-primary {
+    background-color: #001F3F !important;
+    border-color: #001F3F !important;
+}
+
+.swal2-confirm.btn.btn-primary:hover {
+    background-color: #00182E !important;
+    border-color: #00182E !important;
+}
+
+/* Styling untuk tanda (*) merah pada label */
+.form-label .text-danger {
+    font-size: 1.2em; /* Sedikit lebih besar dari teks label normal */
+    vertical-align: middle; /* Posisikan di tengah vertikal */
+    line-height: 1; /* Pastikan tinggi baris tidak mengganggu */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    body {
+        padding-top: 75px;
+    }
+    .card-body {
+        padding: 30px !important;
+    }
+    .card-title {
+        font-size: 2rem;
+    }
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
 }
