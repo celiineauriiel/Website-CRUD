@@ -408,7 +408,7 @@ function registrasi($data)
     $password = md5($password); 
 
     // tambahkan user baru ke database
-    mysqli_query($koneksi, "INSERT INTO user VALUES('', '$username', '$password')");
+    mysqli_query($koneksi, "INSERT INTO user (username, password) VALUES('$username', '$password')");
 
     // Cek error query jika ada untuk debugging
     if (mysqli_error($koneksi)) {
