@@ -1,4 +1,5 @@
 <?php
+//tes
 // Aktifkan error reporting untuk debugging. Di produksi, ini bisa diatur di server.
 error_reporting(E_ALL);
 ini_set('display_errors', 1); // Mungkin ingin disetel ke 0 di Cloud Run produksi nanti dan mengandalkan log.
