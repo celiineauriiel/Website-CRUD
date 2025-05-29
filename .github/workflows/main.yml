@@ -1,0 +1,67 @@
+name: Build and Deploy to Google Cloud Run
+
+on:
+  push:
+    branches:
+      - main  # Atau master, atau branch utama Anda
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GAR_LOCATION: ${{ secrets.GCP_ARTIFACT_REGISTRY_LOCATION }} # misalnya: asia-southeast1
+  SERVICE_NAME: ${{ secrets.GCP_CLOUD_RUN_SERVICE_NAME }} # misalnya: aplikasi-mahasiswa-service
+  RUN_REGION: ${{ secrets.GCP_CLOUD_RUN_REGION }} # misalnya: asia-southeast1
+  DB_HOST: ${{ secrets.DB_HOST }} # Instance Connection Name
+  DB_USER: ${{ secrets.DB_USER }}
+  DB_PASS: ${{ secrets.DB_PASS }}
+  DB_NAME: ${{ secrets.DB_NAME }}
+  IMAGE_NAME: datamahasiswa # Nama image Docker Anda
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+
+    - name: Configure Docker
+      run: gcloud auth configure-docker ${{ env.GAR_LOCATION }}-docker.pkg.dev --quiet
+
+    - name: Build Docker image
+      run: docker build -t ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+
+    - name: Push Docker image to Artifact Registry
+      run: docker push ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+    - name: Deploy to Cloud Run
+      uses: google-github-actions/deploy-cloudrun@v2
+      with:
+        service: ${{ env.SERVICE_NAME }}
+        region: ${{ env.RUN_REGION }}
+        image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.IMAGE_NAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        env_vars: |
+          DB_HOST=${{ env.DB_HOST }}
+          DB_USER=${{ env.DB_USER }}
+          DB_PASS=${{ env.DB_PASS }}
+          DB_NAME=${{ env.DB_NAME }}
+        # Opsi untuk mengizinkan akses publik (unauthenticated)
+        # Jika tidak diset, hanya user terautentikasi GCP yang bisa akses
+        # Sesuaikan dengan kebutuhan Anda
+        flags: '--allow-unauthenticated'
+        # Untuk menghubungkan Cloud Run ke Cloud SQL
+        # Pastikan service account yang digunakan oleh Cloud Run (defaultnya Compute Engine default service account)
+        # memiliki role "Cloud SQL Client"
+        # Atau, service account yang Anda buat (GCP_SA_KEY) juga bisa diassign ke Cloud Run Service.
+        # Namun, lebih baik service account Cloud Run yang digunakan Cloud Run itu sendiri yang punya permission.
+        # Jika Cloud Run dan Cloud SQL dalam project yang sama, ini biasanya sudah terkonfigurasi.
+        # Jika tidak, Anda mungkin perlu menambahkan:
+        # cloudsql_instances: ${{ env.DB_HOST }} # Ini adalah instance connection name
