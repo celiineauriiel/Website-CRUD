@@ -14,7 +14,7 @@ env:
   DB_USER: ${{ secrets.DB_USER }}
   DB_PASS: ${{ secrets.DB_PASS }}
   DB_NAME: ${{ secrets.DB_NAME }}
-  IMAGE_NAME: datamahasiswa # Nama image Docker Anda
+  IMAGE_NAME: datasiswa # Nama image Docker Anda
 
 jobs:
   build-and-deploy:
