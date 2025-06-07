@@ -25,6 +25,20 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.0' # Pastikan versi ini sesuai dengan yang Anda gunakan
+        extensions: mbstring, pdo_mysql, mysqli # Ekstensi yang dibutuhkan kode dan tes Anda
+        tools: composer
+
+    - name: Install Composer dependencies
+      run: composer install --prefer-dist --no-progress
+
+    - name: Run PHPUnit tests
+      run: composer test # Menjalankan skrip "test" dari composer.json
+      # Pipeline akan otomatis gagal jika ada tes yang tidak lolos
+
     - name: Authenticate to Google Cloud
       uses: google-github-actions/auth@v2
       with:
