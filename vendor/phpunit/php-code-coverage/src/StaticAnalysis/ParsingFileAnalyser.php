@@ -9,6 +9,8 @@
  */
 namespace SebastianBergmann\CodeCoverage\StaticAnalysis;
 
+use const T_COMMENT;
+use const T_DOC_COMMENT;
 use function array_merge;
 use function array_unique;
 use function assert;
@@ -22,7 +24,6 @@ use function substr_count;
 use function token_get_all;
 use function trim;
 use PhpParser\Error;
-use PhpParser\Lexer;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\NodeVisitor\ParentConnectingVisitor;
@@ -33,27 +34,27 @@ use SebastianBergmann\LinesOfCode\LineCountingVisitor;
 /**
  * @internal This class is not covered by the backward compatibility promise for phpunit/php-code-coverage
  *
- * @psalm-import-type CodeUnitFunctionType from \SebastianBergmann\CodeCoverage\StaticAnalysis\CodeUnitFindingVisitor
- * @psalm-import-type CodeUnitMethodType from \SebastianBergmann\CodeCoverage\StaticAnalysis\CodeUnitFindingVisitor
- * @psalm-import-type CodeUnitClassType from \SebastianBergmann\CodeCoverage\StaticAnalysis\CodeUnitFindingVisitor
- * @psalm-import-type CodeUnitTraitType from \SebastianBergmann\CodeCoverage\StaticAnalysis\CodeUnitFindingVisitor
- * @psalm-import-type LinesOfCodeType from \SebastianBergmann\CodeCoverage\StaticAnalysis\FileAnalyser
- * @psalm-import-type LinesType from \SebastianBergmann\CodeCoverage\StaticAnalysis\FileAnalyser
+ * @phpstan-import-type CodeUnitFunctionType from \SebastianBergmann\CodeCoverage\StaticAnalysis\CodeUnitFindingVisitor
+ * @phpstan-import-type CodeUnitMethodType from \SebastianBergmann\CodeCoverage\StaticAnalysis\CodeUnitFindingVisitor
+ * @phpstan-import-type CodeUnitClassType from \SebastianBergmann\CodeCoverage\StaticAnalysis\CodeUnitFindingVisitor
+ * @phpstan-import-type CodeUnitTraitType from \SebastianBergmann\CodeCoverage\StaticAnalysis\CodeUnitFindingVisitor
+ * @phpstan-import-type LinesOfCodeType from \SebastianBergmann\CodeCoverage\StaticAnalysis\FileAnalyser
+ * @phpstan-import-type LinesType from \SebastianBergmann\CodeCoverage\StaticAnalysis\FileAnalyser
  */
 final class ParsingFileAnalyser implements FileAnalyser
 {
     /**
-     * @psalm-var array<string, array<string, CodeUnitClassType>>
+     * @var array<string, array<string, CodeUnitClassType>>
      */
     private array $classes = [];
 
     /**
-     * @psalm-var array<string, array<string, CodeUnitTraitType>>
+     * @var array<string, array<string, CodeUnitTraitType>>
      */
     private array $traits = [];
 
     /**
-     * @psalm-var array<string, array<string, CodeUnitFunctionType>>
+     * @var array<string, array<string, CodeUnitFunctionType>>
      */
     private array $functions = [];
 
@@ -80,6 +81,9 @@ final class ParsingFileAnalyser implements FileAnalyser
         $this->ignoreDeprecatedCode          = $ignoreDeprecatedCode;
     }
 
+    /**
+     * @return array<string, CodeUnitClassType>
+     */
     public function classesIn(string $filename): array
     {
         $this->analyse($filename);
@@ -87,6 +91,9 @@ final class ParsingFileAnalyser implements FileAnalyser
         return $this->classes[$filename];
     }
 
+    /**
+     * @return array<string, CodeUnitTraitType>
+     */
     public function traitsIn(string $filename): array
     {
         $this->analyse($filename);
@@ -94,6 +101,9 @@ final class ParsingFileAnalyser implements FileAnalyser
         return $this->traits[$filename];
     }
 
+    /**
+     * @return array<string, CodeUnitFunctionType>
+     */
     public function functionsIn(string $filename): array
     {
         $this->analyse($filename);
@@ -101,6 +111,9 @@ final class ParsingFileAnalyser implements FileAnalyser
         return $this->functions[$filename];
     }
 
+    /**
+     * @return LinesOfCodeType
+     */
     public function linesOfCodeFor(string $filename): array
     {
         $this->analyse($filename);
@@ -108,6 +121,9 @@ final class ParsingFileAnalyser implements FileAnalyser
         return $this->linesOfCode[$filename];
     }
 
+    /**
+     * @return LinesType
+     */
     public function executableLinesIn(string $filename): array
     {
         $this->analyse($filename);
@@ -115,6 +131,9 @@ final class ParsingFileAnalyser implements FileAnalyser
         return $this->executableLines[$filename];
     }
 
+    /**
+     * @return LinesType
+     */
     public function ignoredLinesFor(string $filename): array
     {
         $this->analyse($filename);
@@ -140,10 +159,7 @@ final class ParsingFileAnalyser implements FileAnalyser
 
         assert($linesOfCode > 0);
 
-        $parser = (new ParserFactory)->create(
-            ParserFactory::PREFER_PHP7,
-            new Lexer
-        );
+        $parser = (new ParserFactory)->createForHostVersion();
 
         try {
             $nodes = $parser->parse($source);
@@ -171,10 +187,10 @@ final class ParsingFileAnalyser implements FileAnalyser
                 sprintf(
                     'Cannot parse %s: %s',
                     $filename,
-                    $error->getMessage()
+                    $error->getMessage(),
                 ),
                 $error->getCode(),
-                $error
+                $error,
             );
         }
         // @codeCoverageIgnoreEnd
@@ -190,8 +206,8 @@ final class ParsingFileAnalyser implements FileAnalyser
         $this->ignoredLines[$filename] = array_unique(
             array_merge(
                 $this->ignoredLines[$filename],
-                $ignoredLinesFindingVisitor->ignoredLines()
-            )
+                $ignoredLinesFindingVisitor->ignoredLines(),
+            ),
         );
 
         sort($this->ignoredLines[$filename]);
@@ -243,7 +259,7 @@ final class ParsingFileAnalyser implements FileAnalyser
 
                 $this->ignoredLines[$filename] = array_merge(
                     $this->ignoredLines[$filename],
-                    range($start, $token[2])
+                    range($start, $token[2]),
                 );
             }
         }
