@@ -35,6 +35,9 @@ jobs:
     - name: Install Composer dependencies
       run: composer install --prefer-dist --no-progress
 
+    - name: Add execute permission for phpunit
+      run: chmod +x vendor/bin/phpunit
+      
     - name: Run PHPUnit tests
       run: composer test # Menjalankan skrip "test" dari composer.json
       # Pipeline akan otomatis gagal jika ada tes yang tidak lolos
