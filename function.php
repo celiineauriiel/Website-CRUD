@@ -38,7 +38,8 @@ if (mysqli_connect_errno()) {
     // Untuk sekarang, kita bisa hentikan eksekusi dengan pesan sederhana.
     die("Tidak dapat terhubung ke database. Mohon coba beberapa saat lagi atau hubungi administrator.");
     // Jika Anda ingin tetap menggunakan SweetAlert, pastikan skripnya sudah dimuat.
-*    /*
+    // Contoh SweetAlert (mungkin tidak ideal di sini karena bisa jadi dipanggil sebelum HTML):
+    /*
     echo "<script>
             document.addEventListener('DOMContentLoaded', function() {
                 if (typeof Swal !== 'undefined') {
@@ -56,7 +57,7 @@ if (mysqli_connect_errno()) {
             });
           </script>";
     */
-    // exit();
+    // exit(); // Hentikan eksekusi jika koneksi gagal
 }
 // --- AKHIR MODIFIKASI UNTUK CLOUD ---
 
