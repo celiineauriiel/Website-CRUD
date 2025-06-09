@@ -3,7 +3,7 @@
         'name' => 'pso-b-kel11/datasiswa',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '6e1cb7a588d8b0097a11de8d33b0128584d1a781',
+        'reference' => 'cc43bbaae4ac57d7893c48c90c40ae1150b33601',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -121,7 +121,7 @@
         'pso-b-kel11/datasiswa' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '6e1cb7a588d8b0097a11de8d33b0128584d1a781',
+            'reference' => 'cc43bbaae4ac57d7893c48c90c40ae1150b33601',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
