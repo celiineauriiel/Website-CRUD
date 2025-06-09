@@ -6,41 +6,19 @@ if (isset($_SESSION['login'])) {
     exit;
 }
 
-// Memanggil atau membutuhkan file function.php
-require 'function.php'; // Pastikan function.php terhubung dan $koneksi tersedia
-
 // jika tombol yang bernama login diklik
 if (isset($_POST['login'])) {
-    $username = $_POST['username'];
-    $password_input_hashed = md5($_POST['password']); // Password dari input di-MD5-kan
+    
+    // Panggil fungsi yang baru kita buat
+    $loginSuccess = processLogin($koneksi, $_POST['username'], $_POST['password']);
 
-    // mengambil data dari user dimana username yg diambil
-    $result = mysqli_query($koneksi, "SELECT * FROM user WHERE username = '$username'");
-
-    // Periksa apakah query berhasil dan ada baris yang ditemukan
-    if ($result && mysqli_num_rows($result) > 0) {
-        $row = mysqli_fetch_assoc($result); // Ambil data pengguna dari hasil query
-
-        // PERBAIKAN KRUSIAL: Verifikasi password kembali ke perbandingan MD5
-        // Ini akan membandingkan MD5 dari input dengan password yang tersimpan di database
-        if ($password_input_hashed === $row['password']) { // Kembali ke perbandingan MD5
-            $_SESSION['login'] = true;
-            $_SESSION['username'] = $row['username']; // Simpan username di session
-
-            // cek remember me (logika ini tidak aktif / berfungsi seperti yang telah disepakati)
-            // if (isset($_POST['remember'])) {
-            //     setcookie('id', $row['id'], time() + (60 * 60 * 24 * 7));
-            //     setcookie('key', hash('sha256', $row['username']), time() + (60 * 60 * 24 * 7));
-            // }
-
-            header('location:index.php');
-            exit;
-        } else {
-            // Password salah
-            $error = true;
-        }
+    // Periksa hasil dari fungsi
+    if ($loginSuccess) {
+        // Jika fungsi mengembalikan true, barulah lakukan redirect dan exit
+        header('location:index.php');
+        exit;
     } else {
-        // Username tidak ditemukan atau query gagal
+        // Jika fungsi mengembalikan false, set variabel error
         $error = true;
     }
 }

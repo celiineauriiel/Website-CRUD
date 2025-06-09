@@ -8,7 +8,7 @@ if (!isset($_SESSION['login'])) {
 }
 
 // Memanggil atau membutuhkan file function.php
-require 'function.php';
+require_once 'function.php';
 
 // Inisialisasi variabel untuk menyimpan nilai form
 // Jika form disubmit dan ada data POST, gunakan data tersebut untuk mengisi ulang form

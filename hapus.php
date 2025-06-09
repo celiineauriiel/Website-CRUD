@@ -7,7 +7,7 @@ if (!isset($_SESSION['login'])) {
     exit;
 }
 // Memanggil atau membutuhkan file function.php
-require 'function.php';
+require_once 'function.php';
 
 // Mengambil data dari nis dengan fungsi get
 // $nis = $_GET['nis']; // <--- BARIS INI SALAH UNTUK REQUEST AJAX POST

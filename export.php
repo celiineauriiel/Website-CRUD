@@ -1,6 +1,6 @@
 <?php
 // Memanggil atau membutuhkan file function.php
-require 'function.php';
+require_once 'function.php';
 
 // Menampilkan semua data dari table siswa berdasarkan nis secara Descending
 $siswa = query("SELECT * FROM siswa ORDER BY nis DESC");

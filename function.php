@@ -122,7 +122,7 @@ function tambah($data)
                     });
                 });
              </script>";
-        return 0; // Mengembalikan 0 karena NIS duplikat
+        return 2; // Mengembalikan 0 karena NIS duplikat
     }
 
     // Validasi format email
@@ -139,20 +139,22 @@ function tambah($data)
                     });
                 });
              </script>";
-        return 0; // Mengembalikan 0 karena format email salah
+        return 3; // Mengembalikan 0 karena format email salah
     }
 
     // Panggil fungsi upload. FUNGSI UPLOAD SEKARANG MENGATASI KASUS TANPA GAMBAR
     $gambar = upload();
 
+    // Cek apakah ada gambar yang di-upload atau tidak
     if ($gambar === false) {
-        return 0; // Mengembalikan 0 agar fungsi tambah() gagal
+        // JIKA TIDAK ADA GAMBAR: Buat query INSERT tanpa kolom 'gambar'
+        $sql = "INSERT INTO siswa (nis, nama, tmpt_lahir, tgl_lahir, jekel, jurusan, ipk, jalur_masuk, email, alamat)
+                VALUES ('$nis', '$nama', '$tmpt_Lahir', '$tgl_Lahir', '$jekel', '$jurusan', '$ipk', '$jalur_masuk', '$email', '$alamat')";
+    } else {
+        // JIKA ADA GAMBAR: Buat query INSERT dengan kolom 'gambar'
+        $sql = "INSERT INTO siswa (nis, nama, tmpt_lahir, tgl_lahir, jekel, jurusan, ipk, jalur_masuk, email, gambar, alamat)
+                VALUES ('$nis', '$nama', '$tmpt_Lahir', '$tgl_Lahir', '$jekel', '$jurusan', '$ipk', '$jalur_masuk', '$email', '$gambar', '$alamat')";
     }
-
-    // Sesuaikan query INSERT dengan kolom baru
-    $sql = "INSERT INTO siswa (nis, nama, tmpt_Lahir, tgl_Lahir, jekel, jurusan, ipk, jalur_masuk, email, gambar, alamat) 
-            VALUES ('$nis', '$nama', '$tmpt_Lahir', '$tgl_Lahir', '$jekel', '$jurusan', '$ipk', '$jalur_masuk', '$email', '$gambar', '$alamat')";
-
 
     mysqli_query($koneksi, $sql);
 
@@ -170,7 +172,7 @@ function tambah($data)
                     });
                 });
               </script>";
-        return 0; // Mengembalikan 0 jika ada error database
+        return 5; // Mengembalikan 0 jika ada error database
     }
 
     return mysqli_affected_rows($koneksi);
@@ -229,14 +231,14 @@ function ubah($data)
     }
 
     // Cek apakah ada file gambar baru yang diunggah
-    if ($_FILES['gambar']['error'] === 4) {
-        $gambar = $gambarLama; // Gunakan gambar lama
-    } else {
-        $gambar = upload();
-        if ($gambar === false) { // Jika upload gagal (misal: bukan gambar, ukuran terlalu besar)
-            return 0; // Mengembalikan 0 agar fungsi ubah() gagal
-        }
-    }
+    // if ($_FILES['gambar']['error'] === 4) {
+    //     $gambar = $gambarLama; // Gunakan gambar lama
+    // } else {
+    //     $gambar = upload();
+    //     if ($gambar === false) { // Jika upload gagal (misal: bukan gambar, ukuran terlalu besar)
+    //         return 0; // Mengembalikan 0 agar fungsi ubah() gagal
+    //     }
+    // }
 
     // Sesuaikan query UPDATE dengan kolom baru
     $sql = "UPDATE siswa SET 
@@ -248,7 +250,6 @@ function ubah($data)
                 ipk = '$ipk', 
                 jalur_masuk = '$jalur_masuk', 
                 email = '$email', 
-                gambar = '$gambar', 
                 alamat = '$alamat' 
             WHERE nis = '$nis'";
 
@@ -428,6 +429,45 @@ function registrasi($data)
         return 0; // Mengembalikan 0 jika ada error database
     }
 
-    return mysqli_affected_rows($koneksi);
+    return mysqli_affected_rows($koneksi);  
 }
+/**
+     * Memproses logika login dan mengembalikan status keberhasilannya.
+     * Fungsi ini tidak memanggil header() atau exit() agar bisa diuji.
+     *
+     * @param mysqli $koneksi Objek koneksi database.
+     * @param string $username Username dari input.
+     * @param string $password Password mentah dari input.
+     * @return bool Mengembalikan TRUE jika login berhasil, FALSE jika gagal.
+     */
+    function processLogin(mysqli $koneksi, string $username, string $password): bool
+    {
+        // Alur tetap sama: Menggunakan MD5 seperti kode asli
+        $password_input_hashed = md5($password);
+
+        // PERINGATAN: Query ini rentan terhadap SQL Injection.
+        // Sebaiknya gunakan prepared statements di kemudian hari.
+        $result = mysqli_query($koneksi, "SELECT * FROM user WHERE username = '$username'");
+
+        // Periksa apakah query berhasil dan ada baris yang ditemukan
+        if ($result && mysqli_num_rows($result) > 0) {
+            $row = mysqli_fetch_assoc($result);
+
+            // Verifikasi password (alur tetap sama)
+            if ($password_input_hashed === $row['password']) {
+                // Jika berhasil, atur sesi
+                $_SESSION['login'] = true;
+                $_SESSION['username'] = $row['username'];
+
+                // DIHAPUS: header('location:index.php');
+                // DIHAPUS: exit;
+                
+                // DIGANTI: Kembalikan 'true' untuk menandakan sukses
+                return true;
+            }
+        }
+        
+        // Jika username tidak ditemukan atau password salah, kembalikan 'false'
+        return false;
+    }
 ?>

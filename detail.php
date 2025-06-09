@@ -4,7 +4,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // Memanggil atau membutuhkan file function.php
-require 'function.php';
+require_once 'function.php';
 
 // Jika dataSiswa diklik maka
 if (isset($_POST['dataSiswa'])) {
