@@ -61,7 +61,7 @@ class SiswaCrudTest extends DatabaseTestCase
         echo $hasilHapus;
         $this->assertEquals(1, $hasilHapus);
 
-        //after hapus
+        //after hapus setelah
         $dataSetelahHapus = query("SELECT * FROM siswa WHERE nis = '5026221001'");
         $this->assertCount(0, $dataSetelahHapus);
     }
