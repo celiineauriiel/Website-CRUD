@@ -1,6 +1,8 @@
 <?php
 // File: monitoring.php
 
+// SOLUSI: Pastikan baris ini ada di paling atas.
+// Baris ini memuat autoloader Composer agar semua kelas Prometheus dikenali.
 require __DIR__ . '/vendor/autoload.php';
 
 use Prometheus\CollectorRegistry;
@@ -34,6 +36,7 @@ function push_metrics() {
     }
 
     $registry = getRegistry();
+    // Baris di bawah inilah yang menyebabkan error jika kelasnya tidak ditemukan
     $pushGateway = new PushGateway($pushgatewayAddress);
     // 'php_app' adalah nama job, 'instance_id' bisa di-generate secara acak
     // atau menggunakan variabel dari Cloud Run jika tersedia.
