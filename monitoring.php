@@ -7,7 +7,7 @@ require __DIR__ . '/vendor/autoload.php';
 
 use Prometheus\CollectorRegistry;
 use Prometheus\Storage\InMemory;
-use Prometheus\PushGateway;
+use PrometheusPushGateway\PushGateway;
 use Prometheus\Gauge;
 
 function getRegistry() {
