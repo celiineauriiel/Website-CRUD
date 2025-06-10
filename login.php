@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once 'function.php';
 // Jika bisa login maka ke index.php
 if (isset($_SESSION['login'])) {
     header('location:index.php');
