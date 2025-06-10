@@ -38,7 +38,7 @@ jobs:
     - name: Add execute permission for phpunit
       run: chmod +x vendor/bin/phpunit
       
-    - name: Run PHPUnit tests
+    - name: Run PHPUnit Tests
       run: composer test # Menjalankan skrip "test" dari composer.json
       # Pipeline akan otomatis gagal jika ada tes yang tidak lolos
 

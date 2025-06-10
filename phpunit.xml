@@ -11,10 +11,9 @@
     </testsuites>
 
     <php>
-        <env name="DB_HOST" value="localhost"/>
-        <env name="DB_USER" value="root"/>
-        <env name="DB_PASS" value=""/>
-        <env name="DB_NAME" value="data_siswa_test"/>
-        <env name="DB_PORT" value="3306"/>
+        <env name="DB_HOST" value="${DB_HOST}"/>
+        <env name="DB_USER" value="${DB_USER}"/>
+        <env name="DB_PASS" value="${DB_PASS}"/>
+        <env name="DB_NAME" value="${DB_NAME}"/>
     </php>
 </phpunit>
