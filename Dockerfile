@@ -1,4 +1,4 @@
-# SOLUSI: Ganti versi PHP dari 8.0 ke 8.2 untuk memenuhi persyaratan Composer
+# Gunakan image PHP resmi dengan Apache
 FROM php:8.2-apache
 
 # Instal ekstensi PHP yang dibutuhkan (mysqli untuk koneksi database)
@@ -10,23 +10,11 @@ RUN sed -i 's/80/8080/g' /etc/apache2/ports.conf /etc/apache2/sites-available/00
 # Set direktori kerja di dalam container
 WORKDIR /var/www/html
 
-# Instal Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Salin file definisi dependensi terlebih dahulu
-COPY composer.json composer.lock* ./
-
-# Jalankan composer install
-RUN composer install --no-dev --optimize-autoloader --no-interaction
-
-# Salin sisa file aplikasi Anda
+# Salin semua file aplikasi dari direktori saat ini ke direktori kerja di container
 COPY . /var/www/html/
 
-# Pastikan izin file sudah benar
-RUN chown -R www-data:www-data /var/www/html
-
-# Port yang akan diekspos
+# Apache akan berjalan di port 80
 EXPOSE 8080
 
-# Perintah default untuk menjalankan Apache
+# Perintah default untuk menjalankan Apache saat container dimulai
 CMD ["apache2-foreground"]
