@@ -346,7 +346,7 @@ function upload()
     }
 
     if (move_uploaded_file($tmpName, 'img/' . $namaFileBaru)) {
-        return $namaFileBaru; // Berhasil upload, kembalikan nama file baru
+        return $namaFileBaru; // Berhasil upload, kembalikan nama file baru yoi
     } else {
         // Gagal memindahkan file (mungkin masalah permission atau path)
         error_log("Gagal memindahkan file: " . $tmpName . " ke " . 'img/' . $namaFileBaru . " - Periksa permission dan path.");
