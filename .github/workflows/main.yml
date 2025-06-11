@@ -78,15 +78,21 @@ jobs:
           DB_NAME=${{ env.DB_NAME }}
         flags: '--allow-unauthenticated'
 
-    - name: Show deployed URL
+    - name: Push SUCCESS metric to Pushgateway
+      if: success()
+      run: |
+        # PERUBAHAN: Alamat IP ditulis langsung di sini
+        echo "my_app_last_deploy_timestamp_seconds{status=\"success\", commit=\"${{ github.sha }}\"} $(date +%s)" | curl --data-binary @- http://34.101.208.120:9091/metrics/job/deploy_status/instance/${{ github.run_id }}
+        echo "✅ Deployment Succeeded: Metric pushed to Pushgateway."
+
+    - name: Push FAILURE metric to Pushgateway
+      if: failure()
+      run: |
+        # PERUBAHAN: Alamat IP ditulis langsung di sini
+        echo "my_app_last_deploy_timestamp_seconds{status=\"failure\", commit=\"${{ github.sha }}\"} $(date +%s)" | curl --data-binary @- http://34.101.208.120:9091/metrics/job/deploy_status/instance/${{ github.run_id }}
+        echo "❌ Deployment Failed: Metric pushed to Pushgateway."
+
+    - name: Show deployed URL on Success
+      if: success()
       run: |
         echo "🚀 Deployed to: ${{ steps.deploy.outputs.url }}"
-
-    - name: Push custom metric to Prometheus Pushgateway
-      run: |
-        echo "my_app_deploy_total{status=\"success\"} 1" | curl --data-binary @- http://34.101.208.120:9091/metrics/job/deploy_status
-
-    - name: Notify monitoring success
-      run: |
-        echo "📊 Custom metric pushed to Pushgateway."
-        echo "🔗 View metrics in Grafana: http://34.101.208.120:3000 (login required)"
