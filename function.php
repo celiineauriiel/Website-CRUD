@@ -1,4 +1,7 @@
 <?php
+// MONITORING: Baris ini ditambahkan untuk memuat fungsi-fungsi monitoring kita.
+require_once 'monitoring.php';
+
 //tes
 // Aktifkan error reporting untuk debugging. Di produksi, ini bisa diatur di server.
 error_reporting(E_ALL);
@@ -175,7 +178,13 @@ function tambah($data)
         return 5; // Mengembalikan 0 jika ada error database
     }
 
-    return mysqli_affected_rows($koneksi);
+    // MONITORING: Blok ini ditambahkan untuk mengirim metrik jika data berhasil ditambahkan.
+    $affected_rows = mysqli_affected_rows($koneksi);
+    if ($affected_rows > 0) {
+        record_counter('data_added_total', 'Total new student data added.');
+        push_metrics();
+    }
+    return $affected_rows;
 }
 
 // Membuat fungsi hapus
@@ -459,10 +468,18 @@ function registrasi($data)
                 $_SESSION['login'] = true;
                 $_SESSION['username'] = $row['username'];
 
+                // DIHAPUS: header('location:index.php');
+                // DIHAPUS: exit;
+                
+                // DIGANTI: Kembalikan 'true' untuk menandakan sukses
                 return true;
             }
         }
         
+        // MONITORING: Blok ini ditambahkan untuk mencatat login yang gagal.
+        record_counter('logins_total', 'Total user logins.', ['status' => 'failed']);
+        push_metrics();
+
         // Jika username tidak ditemukan atau password salah, kembalikan 'false'
         return false;
     }

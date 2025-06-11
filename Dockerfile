@@ -1,5 +1,5 @@
 # Gunakan image PHP resmi dengan Apache
-FROM php:8.0-apache
+FROM php:8.2-apache
 
 # Instal ekstensi PHP yang dibutuhkan (mysqli untuk koneksi database)
 RUN docker-php-ext-install mysqli && docker-php-ext-enable mysqli
