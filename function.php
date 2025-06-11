@@ -459,10 +459,6 @@ function registrasi($data)
                 $_SESSION['login'] = true;
                 $_SESSION['username'] = $row['username'];
 
-                // DIHAPUS: header('location:index.php');
-                // DIHAPUS: exit;
-                
-                // DIGANTI: Kembalikan 'true' untuk menandakan sukses
                 return true;
             }
         }
