@@ -8,14 +8,14 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  GAR_LOCATION: ${{ secrets.GCP_ARTIFACT_REGISTRY_LOCATION }} # misalnya: asia-southeast1
-  SERVICE_NAME: ${{ secrets.GCP_CLOUD_RUN_SERVICE_NAME }} # misalnya: aplikasi-mahasiswa-service
-  RUN_REGION: ${{ secrets.GCP_CLOUD_RUN_REGION }} # misalnya: asia-southeast1
-  DB_HOST: ${{ secrets.DB_HOST }} # Instance Connection Name
+  GAR_LOCATION: ${{ secrets.GCP_ARTIFACT_REGISTRY_LOCATION }}
+  SERVICE_NAME: ${{ secrets.GCP_CLOUD_RUN_SERVICE_NAME }}
+  RUN_REGION: ${{ secrets.GCP_CLOUD_RUN_REGION }}
+  DB_HOST: ${{ secrets.DB_HOST }}
   DB_USER: ${{ secrets.DB_USER }}
   DB_PASS: ${{ secrets.DB_PASS }}
   DB_NAME: ${{ secrets.DB_NAME }}
-  IMAGE_NAME: datasiswa # Nama image Docker Anda
+  IMAGE_NAME: datasiswa
 
 jobs:
   build-and-deploy:
@@ -29,8 +29,8 @@ jobs:
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.2' # Pastikan versi ini sesuai dengan yang Anda gunakan
-        extensions: mbstring, pdo_mysql, mysqli # Ekstensi yang dibutuhkan kode dan tes Anda
+        php-version: '8.2'
+        extensions: mbstring, pdo_mysql, mysqli
         tools: composer
 
     - name: Install Composer dependencies
@@ -40,8 +40,12 @@ jobs:
       run: chmod +x vendor/bin/phpunit
       
     - name: Run PHPUnit Tests
-      run: composer test # Menjalankan skrip "test" dari composer.json
-      # Pipeline akan otomatis gagal jika ada tes yang tidak lolos
+      run: composer test
+      env:
+        DB_HOST: ${{ secrets.DB_HOST }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASS: ${{ secrets.DB_PASS }}
+        DB_NAME: ${{ secrets.GCP_TEST_DB_NAME }}
 
     - name: Authenticate to Google Cloud
       uses: google-github-actions/auth@v2
