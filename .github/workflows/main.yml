@@ -76,19 +76,17 @@ jobs:
           DB_USER=${{ env.DB_USER }}
           DB_PASS=${{ env.DB_PASS }}
           DB_NAME=${{ env.DB_NAME }}
-        # Opsi untuk mengizinkan akses publik (unauthenticated)
-        # Jika tidak diset, hanya user terautentikasi GCP yang bisa akses
-        # Sesuaikan dengan kebutuhan Anda
         flags: '--allow-unauthenticated'
-        # Untuk menghubungkan Cloud Run ke Cloud SQL
-        # Pastikan service account yang digunakan oleh Cloud Run (defaultnya Compute Engine default service account)
-        # memiliki role "Cloud SQL Client"
-        # Atau, service account yang Anda buat (GCP_SA_KEY) juga bisa diassign ke Cloud Run Service.
-        # Namun, lebih baik service account Cloud Run yang digunakan Cloud Run itu sendiri yang punya permission.
-        # Jika Cloud Run dan Cloud SQL dalam project yang sama, ini biasanya sudah terkonfigurasi.
-        # Jika tidak, Anda mungkin perlu menambahkan:
-        # cloudsql_instances: ${{ env.DB_HOST }} # Ini adalah instance connection name
 
     - name: Show deployed URL
       run: |
         echo "🚀 Deployed to: ${{ steps.deploy.outputs.url }}"
+
+    - name: Push custom metric to Prometheus Pushgateway
+      run: |
+        echo "my_app_deploy_total{status=\"success\"} 1" | curl --data-binary @- http://34.101.208.120:9091/metrics/job/deploy_status
+
+    - name: Notify monitoring success
+      run: |
+        echo "📊 Custom metric pushed to Pushgateway."
+        echo "🔗 View metrics in Grafana: http://34.101.208.120:3000 (login required)"
