@@ -11,23 +11,25 @@ if (!isset($_SESSION['login'])) {
 require_once 'function.php';
 
 // Inisialisasi variabel untuk menyimpan nilai form
-// Jika form disubmit dan ada data POST, gunakan data tersebut untuk mengisi ulang form
-// Jika tidak, biarkan kosong (untuk tampilan pertama kali)
 $old_nis = isset($_POST['nis']) ? htmlspecialchars($_POST['nis']) : '';
 $old_nama = isset($_POST['nama']) ? htmlspecialchars($_POST['nama']) : '';
 $old_tmpt_Lahir = isset($_POST['tmpt_Lahir']) ? htmlspecialchars($_POST['tmpt_Lahir']) : '';
 $old_tgl_Lahir = isset($_POST['tgl_Lahir']) ? htmlspecialchars($_POST['tgl_Lahir']) : '';
 $old_jekel = isset($_POST['jekel']) ? htmlspecialchars($_POST['jekel']) : '';
 $old_jurusan = isset($_POST['jurusan']) ? htmlspecialchars($_POST['jurusan']) : '';
+$old_ipk = isset($_POST['ipk']) ? htmlspecialchars($_POST['ipk']) : '';
+$old_jalur_masuk = isset($_POST['jalur_masuk']) ? htmlspecialchars($_POST['jalur_masuk']) : '';
 $old_email = isset($_POST['email']) ? htmlspecialchars($_POST['email']) : '';
 $old_alamat = isset($_POST['alamat']) ? htmlspecialchars($_POST['alamat']) : '';
-// Untuk file input (gambar), tidak bisa mengisi ulang value-nya karena alasan keamanan.
 
 // Jika fungsi tambah lebih dari 0/data tersimpan, maka munculkan alert dibawah
 if (isset($_POST['simpan'])) {
-    // Memanggil fungsi tambah. Fungsi ini akan mengembalikan SweetAlert jika ada error upload.
-    // Jadi kita tidak perlu echo SweetAlert di sini, hanya cek apakah fungsi tambah() berhasil.
-    if (tambah($_POST) > 0) {
+    // Menangkap output dari fungsi tambah (yang mungkin berisi SweetAlert script dari function.php)
+    ob_start(); // Mulai buffering output
+    $tambah_result = tambah($_POST); // Panggil fungsi tambah
+    $tambah_output = ob_get_clean(); // Ambil outputnya
+
+    if ($tambah_result > 0) {
         $_SESSION['status_tambah'] = [
             'type' => 'success',
             'message' => 'Data mahasiswa berhasil ditambahkan!'
@@ -36,9 +38,25 @@ if (isset($_POST['simpan'])) {
         exit;
     } else {
         // Jika fungsi tambah dari 0/data tidak tersimpan,
-        // function.php sudah menangani SweetAlert untuk error upload/DB.
-        // Cukup biarkan halaman tetap di addData.php tanpa redirect baru,
-        // karena SweetAlert sudah muncul dari function.php.
+        // cek apakah SweetAlert sudah di-echo oleh function.php
+        if (!empty($tambah_output)) {
+            echo $tambah_output; // Tampilkan SweetAlert dari function.php
+        } else {
+            // Jika tidak ada SweetAlert spesifik dari function.php, tampilkan SweetAlert default
+            echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js'></script>";
+            echo "<script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal Menambahkan Data!',
+                            text: 'Terjadi kesalahan saat menambahkan data. Mohon cek kembali isian form.',
+                            confirmButtonText: 'OK',
+                            buttonsStyling: false,
+                            customClass: { confirmButton: 'btn btn-primary' }
+                        });
+                    });
+                  </script>";
+        }
     }
 }
 ?>
@@ -77,6 +95,8 @@ if (isset($_POST['simpan'])) {
                         <a class="nav-link" aria-current="page" href="index.php">Home</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="dashboard.php">Dashboard</a> </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="#about">About</a>
                     </li>
                     <li class="nav-item">
@@ -87,7 +107,8 @@ if (isset($_POST['simpan'])) {
             </div>
         </div>
     </nav>
-    <div class="container mt-3"> <?php
+    <div class="container mt-3"> 
+        <?php
         // Menampilkan pesan status jika ada (dari proses submit yang gagal)
         if (isset($_SESSION['status_tambah'])) {
             $type = $_SESSION['status_tambah']['type'];
@@ -153,12 +174,27 @@ if (isset($_POST['simpan'])) {
                                 <label for="jurusan" class="form-label">Jurusan <span class="text-danger">*</span></label>
                                 <select class="form-select" id="jurusan" name="jurusan" required>
                                     <option value="">Pilih Jurusan</option>
-                                    <option value="Teknik Listrik" <?= ($old_jurusan == 'Teknik Listrik') ? 'selected' : ''; ?>>Teknik Listrik</option>
-                                    <option value="Teknik Komputer dan Jaringan" <?= ($old_jurusan == 'Teknik Komputer dan Jaringan') ? 'selected' : ''; ?>>Teknik Komputer dan Jaringan</option>
-                                    <option value="Multimedia" <?= ($old_jurusan == 'Multimedia') ? 'selected' : ''; ?>>Multimedia</option>
-                                    <option value="Rekayasa Perangkat Lunak" <?= ($old_jurusan == 'Rekayasa Perangkat Lunak') ? 'selected' : ''; ?>>Rekayasa Perangkat Lunak</option>
-                                    <option value="Geomatika" <?= ($old_jurusan == 'Geomatika') ? 'selected' : ''; ?>>Geomatika</option>
-                                    <option value="Mesin" <?= ($old_jurusan == 'Mesin') ? 'selected' : ''; ?>>Mesin</option>
+                                    <option value="Teknik Elektro" <?= ($old_jurusan == 'Teknik Elektro') ? 'selected' : ''; ?>>Teknik Elektro</option>
+                                    <option value="Teknik Biomedik" <?= ($old_jurusan == 'Teknik Biomedik') ? 'selected' : ''; ?>>Teknik Biomedik</option>
+                                    <option value="Teknik Komputer" <?= ($old_jurusan == 'Teknik Komputer') ? 'selected' : ''; ?>>Teknik Komputer</option>
+                                    <option value="Teknik Informatika" <?= ($old_jurusan == 'Teknik Informatika') ? 'selected' : ''; ?>>Teknik Informatika</option>
+                                    <option value="Sistem Informasi" <?= ($old_jurusan == 'Sistem Informasi') ? 'selected' : ''; ?>>Sistem Informasi</option>
+                                    <option value="Teknologi Informasi" <?= ($old_jurusan == 'Teknologi Informasi') ? 'selected' : ''; ?>>Teknologi Informasi</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="ipk" class="form-label">IPK Terakhir</label>
+                                <input type="number" step="0.01" min="0.00" max="4.00" class="form-control" id="ipk" placeholder="Masukkan IPK (contoh: 3.75)" name="ipk" value="<?= $old_ipk; ?>">
+                                <div class="form-text text-secondary">Masukkan nilai IPK (contoh: 3.75). Kosongkan jika belum tersedia.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="jalur_masuk" class="form-label">Jalur Masuk <span class="text-danger">*</span></label>
+                                <select class="form-select" id="jalur_masuk" name="jalur_masuk" required>
+                                    <option value="">Pilih Jalur Masuk</option>
+                                    <option value="SNBP" <?= ($old_jalur_masuk == 'SNBP') ? 'selected' : ''; ?>>SNBP</option>
+                                    <option value="SNBT" <?= ($old_jalur_masuk == 'SNBT') ? 'selected' : ''; ?>>SNBT</option>
+                                    <option value="Mandiri" <?= ($old_jalur_masuk == 'Mandiri') ? 'selected' : ''; ?>>Mandiri</option>
+                                    <option value="Lainnya" <?= ($old_jalur_masuk == 'Lainnya') ? 'selected' : ''; ?>>Lainnya</option>
                                 </select>
                             </div>
                             <div class="mb-3">
@@ -233,6 +269,7 @@ if (isset($_POST['simpan'])) {
         document.addEventListener('DOMContentLoaded', function() {
             const nisInput = document.getElementById('nis');
             const form = document.querySelector('form');
+            const jurusanSelect = document.getElementById('jurusan');
 
             nisInput.addEventListener('input', function() {
                 this.value = this.value.replace(/\D/g, ''); // Hapus karakter non-digit
@@ -249,7 +286,7 @@ if (isset($_POST['simpan'])) {
             form.addEventListener('submit', function(event) {
                 let hasError = false;
 
-                // Validasi NIS
+                // Validasi NIS (karena ini sudah diatur dengan SweetAlert di PHP, kita bisa tambahkan validasi frontend yang spesifik juga)
                 if (nisInput.value.length !== 10) {
                     event.preventDefault();
                     nisInput.classList.add('is-invalid');
@@ -264,6 +301,49 @@ if (isset($_POST['simpan'])) {
                     });
                     return; // Hentikan validasi lain jika NIS sudah salah
                 }
+
+                // Validasi awalan NIS berdasarkan Jurusan (frontend, agar feedback instan)
+                const nisPrefix = nisInput.value.substring(0, 7); // Ambil 7 digit pertama
+                let expectedPrefix = '';
+                switch(jurusanSelect.value) {
+                    case 'T. Elektro': expectedPrefix = '5022221'; break;
+                    case 'T. Biomedik': expectedPrefix = '5023221'; break;
+                    case 'T. Komputer': expectedPrefix = '5024221'; break;
+                    case 'Teknik Informatika': expectedPrefix = '5025221'; break;
+                    case 'Sistem Informasi': expectedPrefix = '5026221'; break;
+                    case 'Teknologi Informasi': expectedPrefix = '5027';
+                        if (nisInput.value.substring(0, 4) !== expectedPrefix) {
+                            hasError = true;
+                            nisInput.classList.add('is-invalid');
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Awalan NIS Tidak Sesuai Jurusan!',
+                                html: 'Untuk jurusan <b>' + jurusanSelect.value + '</b>, NIS harus diawali dengan <b>' + expectedPrefix + '</b>.',
+                                confirmButtonText: 'OK',
+                                buttonsStyling: false,
+                                customClass: { confirmButton: 'btn btn-primary' }
+                            });
+                            event.preventDefault();
+                            return;
+                        }
+                        break;
+                }
+
+                if (jurusanSelect.value !== 'Teknologi Informasi' && nisPrefix !== expectedPrefix && expectedPrefix !== '') {
+                    hasError = true;
+                    nisInput.classList.add('is-invalid');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Awalan NIS Tidak Sesuai Jurusan!',
+                        html: 'Untuk jurusan <b>' + jurusanSelect.value + '</b>, NIS harus diawali dengan <b>' + expectedPrefix + '</b>.',
+                        confirmButtonText: 'OK',
+                        buttonsStyling: false,
+                        customClass: { confirmButton: 'btn btn-primary' }
+                    });
+                    event.preventDefault();
+                    return;
+                }
+
 
                 // Validasi field required lainnya (tetap dilakukan)
                 const requiredFields = form.querySelectorAll('[required]:not([type="radio"])'); // Exclude radio for specific handling
@@ -280,24 +360,33 @@ if (isset($_POST['simpan'])) {
                 const jekelRadios = form.querySelectorAll('input[name="jekel"]');
                 const jekelChecked = Array.from(jekelRadios).some(radio => radio.checked);
                 if (!jekelChecked) {
-                    // Tambahkan kelas is-invalid ke salah satu radio untuk feedback visual
                     if (jekelRadios.length > 0) jekelRadios[0].classList.add('is-invalid');
                     hasError = true;
                 } else {
                     if (jekelRadios.length > 0) jekelRadios[0].classList.remove('is-invalid');
                 }
 
+                // Validasi Jalur Masuk (jika required)
+                const jalurMasukSelect = document.getElementById('jalur_masuk');
+                if (jalurMasukSelect.value === '' && jalurMasukSelect.hasAttribute('required')) {
+                    jalurMasukSelect.classList.add('is-invalid');
+                    hasError = true;
+                } else {
+                    jalurMasukSelect.classList.remove('is-invalid');
+                }
 
                 if (hasError) {
-                    event.preventDefault(); // Mencegah form disubmit jika ada error
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Form Belum Lengkap!',
-                        text: 'Mohon isi semua field yang wajib diisi (ditandai dengan *)',
-                        confirmButtonText: 'OK',
-                        buttonsStyling: false,
-                        customClass: { confirmButton: 'btn btn-primary' }
-                    });
+                    event.preventDefault();
+                    if (!Swal.isVisible()) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Form Belum Lengkap!',
+                            text: 'Mohon isi semua field yang wajib diisi (ditandai dengan *)',
+                            confirmButtonText: 'OK',
+                            buttonsStyling: false,
+                            customClass: { confirmButton: 'btn btn-primary' }
+                        });
+                    }
                 }
             });
         });

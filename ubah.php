@@ -62,6 +62,7 @@ if (isset($_POST['ubah'])) {
         if (!empty($ubah_output)) {
             echo $ubah_output; // Tampilkan SweetAlert dari function.php
             // Data form akan tetap terisi karena tidak ada redirect HTTP di sini
+            // (karena SweetAlert sudah di-echo, kita tidak bisa lagi melakukan header redirect)
         } else {
             // Jika tidak ada SweetAlert spesifik dari function.php (mungkin karena error lain yang tidak spesifik),
             // maka tampilkan SweetAlert default dari ubah.php sendiri.
@@ -117,6 +118,8 @@ if (isset($_POST['ubah'])) {
                         <a class="nav-link" aria-current="page" href="index.php">Home</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="dashboard.php">Dashboard</a> </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="#about">About</a>
                     </li>
                     <li class="nav-item">
@@ -127,7 +130,7 @@ if (isset($_POST['ubah'])) {
             </div>
         </div>
     </nav>
-    <div class="container mt-3"> 
+    <div class="container mt-3">
         <?php
         // Menampilkan pesan status jika ada (dari proses submit yang gagal)
         // Ini HANYA untuk pesan yang diset oleh ubah.php sendiri.
@@ -159,7 +162,11 @@ if (isset($_POST['ubah'])) {
                             <div class="mb-3">
                                 <label for="nis" class="form-label">NIS</label>
                                 <input type="number" class="form-control" id="nis" value="<?= htmlspecialchars($siswa_data['nis']); ?>"
-                                    name="nis" readonly> </div>
+                                    name="nis" readonly>
+                                <div class="invalid-feedback">
+                                    NIS harus tepat 10 digit angka dan 4 digit awal harus sesuai dengan jurusan.
+                                </div>
+                            </div>
                             <div class="mb-3">
                                 <label for="nama" class="form-label">Nama <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="nama"
@@ -198,12 +205,26 @@ if (isset($_POST['ubah'])) {
                                 <label for="jurusan" class="form-label">Jurusan <span class="text-danger">*</span></label>
                                 <select class="form-select" id="jurusan" name="jurusan" required>
                                     <option value="">Pilih Jurusan</option>
-                                    <option value="Teknik Listrik" <?= ($siswa_data['jurusan'] == 'Teknik Listrik') ? 'selected' : ''; ?>>Teknik Listrik</option>
-                                    <option value="Teknik Komputer dan Jaringan" <?= ($siswa_data['jurusan'] == 'Teknik Komputer dan Jaringan') ? 'selected' : ''; ?>>Teknik Komputer dan Jaringan</option>
-                                    <option value="Multimedia" <?= ($siswa_data['jurusan'] == 'Multimedia') ? 'selected' : ''; ?>>Multimedia</option>
-                                    <option value="Rekayasa Perangkat Lunak" <?= ($siswa_data['jurusan'] == 'Rekayasa Perangkat Lunak') ? 'selected' : ''; ?>>Rekayasa Perangkat Lunak</option>
-                                    <option value="Geomatika" <?= ($siswa_data['jurusan'] == 'Geomatika') ? 'selected' : ''; ?>>Geomatika</option>
-                                    <option value="Mesin" <?= ($siswa_data['jurusan'] == 'Mesin') ? 'selected' : ''; ?>>Mesin</option>
+                                    <?php foreach ($jurusan_nis_prefixes as $jurusan_nama => $prefix): ?>
+                                        <option value="<?= $jurusan_nama ?>" <?= ($siswa_data['jurusan'] == $jurusan_nama) ? 'selected' : ''; ?>>
+                                            <?= $jurusan_nama ?> (NIS Depan: <?= $prefix ?>)
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="ipk" class="form-label">IPK Terakhir</label>
+                                <input type="number" step="0.01" min="0.00" max="4.00" class="form-control" id="ipk" placeholder="Masukkan IPK (contoh: 3.75)" name="ipk" value="<?= htmlspecialchars($siswa_data['ipk']); ?>">
+                                <div class="form-text text-secondary">Masukkan nilai IPK (contoh: 3.75). Kosongkan jika belum tersedia.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="jalur_masuk" class="form-label">Jalur Masuk <span class="text-danger">*</span></label>
+                                <select class="form-select" id="jalur_masuk" name="jalur_masuk" required>
+                                    <option value="">Pilih Jalur Masuk</option>
+                                    <option value="SNBP" <?= ($siswa_data['jalur_masuk'] == 'SNBP') ? 'selected' : ''; ?>>SNBP</option>
+                                    <option value="SNBT" <?= ($siswa_data['jalur_masuk'] == 'SNBT') ? 'selected' : ''; ?>>SNBT</option>
+                                    <option value="Mandiri" <?= ($siswa_data['jalur_masuk'] == 'Mandiri') ? 'selected' : ''; ?>>Mandiri</option>
+                                    <option value="Lainnya" <?= ($siswa_data['jalur_masuk'] == 'Lainnya') ? 'selected' : ''; ?>>Lainnya</option>
                                 </select>
                             </div>
                             <div class="mb-3">
@@ -260,7 +281,7 @@ if (isset($_POST['ubah'])) {
 
     <script>
         gsap.registerPlugin(TextPlugin);
-        gsap.to('#ubahDataTitle', { // Menggunakan ID yang lebih spesifik
+        gsap.to('#ubahDataTitle', {
             duration: 1.5,
             delay: 0.5,
             text: {
@@ -284,10 +305,53 @@ if (isset($_POST['ubah'])) {
         });
 
         // ===========================================
-        // SCRIPT UNTUK VALIDASI FORM DENGAN SWEETALERT2
+        // SCRIPT UNTUK VALIDASI FORM DENGAN SWEETALERT2 dan validasi NIS berdasarkan Jurusan
         // ===========================================
         document.addEventListener('DOMContentLoaded', function() {
+            const nisInput = document.getElementById('nis');
+            const jurusanSelect = document.getElementById('jurusan');
             const form = document.querySelector('form');
+
+            // Map JavaScript dari PHP untuk prefix NIS
+            const jurusanNisPrefixes = <?php echo json_encode($jurusan_nis_prefixes); ?>;
+
+            function validateNisJurusanConsistency() {
+                const nisValue = nisInput.value;
+                const selectedJurusan = jurusanSelect.value;
+                let isValid = true;
+                let feedbackMessage = 'NIS harus tepat 10 digit angka dan 4 digit awal harus sesuai dengan jurusan.';
+
+                if (nisValue.length === 10 && /^\d+$/.test(nisValue) && selectedJurusan) {
+                    const expectedPrefix = jurusanNisPrefixes[selectedJurusan];
+                    const nisPrefix = nisValue.substring(0, 4);
+
+                    if (expectedPrefix && nisPrefix !== expectedPrefix) {
+                        isValid = false;
+                        feedbackMessage = 6 digit awal NIS (${nisPrefix}) tidak cocok dengan kode jurusan ${selectedJurusan} (harus ${expectedPrefix}).;
+                    }
+                } else if (nisValue.length !== 10 || !/^\d+$/.test(nisValue)) {
+                    isValid = false; // NIS tidak 10 digit atau bukan angka
+                } else if (!selectedJurusan) {
+                    // NIS 10 digit tapi jurusan belum dipilih
+                    isValid = false;
+                    feedbackMessage = 'Mohon pilih jurusan terlebih dahulu untuk memvalidasi NIS.';
+                }
+
+                if (!isValid) {
+                    nisInput.classList.add('is-invalid');
+                    nisInput.classList.remove('is-valid');
+                    nisInput.nextElementSibling.textContent = feedbackMessage;
+                } else {
+                    nisInput.classList.remove('is-invalid');
+                    nisInput.classList.add('is-valid');
+                }
+                return isValid;
+            }
+
+            // Panggil validasi saat halaman dimuat dan NIS/Jurusan berubah
+            validateNisJurusanConsistency(); // Untuk inisialisasi pada saat load halaman ubah
+            jurusanSelect.addEventListener('change', validateNisJurusanConsistency);
+
 
             form.addEventListener('submit', function(event) {
                 let hasError = false;
@@ -295,12 +359,10 @@ if (isset($_POST['ubah'])) {
                 // Validasi field required
                 const requiredFields = form.querySelectorAll('[required]');
                 requiredFields.forEach(field => {
-                    // Kecuali jika itu radio button group, cek setidaknya satu terpilih
                     if (field.type === 'radio' && field.name === 'jekel') {
-                        const radioGroup = form.querySelectorAll(`input[name="${field.name}"]`);
+                        const radioGroup = form.querySelectorAll(input[name="${field.name}"]);
                         if (!Array.from(radioGroup).some(radio => radio.checked)) {
                             hasError = true;
-                            // Tambahkan kelas is-invalid ke salah satu radio untuk feedback visual
                             if (radioGroup.length > 0) radioGroup[0].classList.add('is-invalid');
                         } else {
                             if (radioGroup.length > 0) radioGroup[0].classList.remove('is-invalid');
@@ -313,16 +375,33 @@ if (isset($_POST['ubah'])) {
                     }
                 });
 
+                // Validasi Jalur Masuk
+                const jalurMasukSelect = document.getElementById('jalur_masuk');
+                if (jalurMasukSelect.value === '' && jalurMasukSelect.hasAttribute('required')) {
+                    jalurMasukSelect.classList.add('is-invalid');
+                    hasError = true;
+                } else {
+                    jalurMasukSelect.classList.remove('is-invalid');
+                }
+
+                // PENTING: Validasi konsistensi NIS dan Jurusan saat submit
+                if (!validateNisJurusanConsistency()) {
+                    hasError = true;
+                }
+
+
                 if (hasError) {
-                    event.preventDefault(); // Mencegah form disubmit jika ada error
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Form Belum Lengkap!',
-                        text: 'Mohon isi semua field yang wajib diisi (ditandai dengan *)',
-                        confirmButtonText: 'OK',
-                        buttonsStyling: false,
-                        customClass: { confirmButton: 'btn btn-primary' }
-                    });
+                    event.preventDefault();
+                    if (!Swal.isVisible()) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Form Belum Lengkap atau Ada Kesalahan!',
+                            text: 'Mohon isi semua field yang wajib diisi (ditandai dengan *) dan periksa validasi NIS.',
+                            confirmButtonText: 'OK',
+                            buttonsStyling: false,
+                            customClass: { confirmButton: 'btn btn-primary' }
+                        });
+                    }
                 }
             });
         });
