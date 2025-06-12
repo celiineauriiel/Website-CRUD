@@ -68,7 +68,7 @@ class DatabaseTestCase extends TestCase
               `nis` varchar(50) NOT NULL PRIMARY KEY, `nama` varchar(255) NOT NULL,
               `tmpt_Lahir` varchar(50) NOT NULL, `tgl_Lahir` date NOT NULL,
               `jekel` enum('Laki - Laki','Perempuan') NOT NULL,
-              `jurusan` enum('Teknik Listrik','Teknik Komputer dan Jaringan','Multimedia','Rekayasa Perangkat Lunak','Geomatika','Mesin') NOT NULL,
+              `jurusan` enum('Teknik Elektro','Teknik Biomedik','Teknik Komputer','Teknik Informatika','Sistem Informasi','Teknologi Informasi') NOT NULL,
               `ipk` FLOAT(4,2) NOT NULL,
               `jalur_masuk` VARCHAR(50) NOT NULL,
               `email` varchar(255) NOT NULL,
