@@ -64,6 +64,15 @@ if (mysqli_connect_errno()) {
 }
 // --- AKHIR MODIFIKASI UNTUK CLOUD ---
 
+$jurusan_nis_prefixes = [
+    'Teknik Elektro' => '5022',
+    'Teknik Biomedik' => '5023',
+    'Teknik Komputer' => '5024',
+    'Teknik Informatika' => '5025',
+    'Sistem Informasi' => '5026',
+    'Teknologi Informasi' => '5027',
+];
+
 // membuat fungsi query dalam bentuk array
 function query($query)
 {
@@ -95,7 +104,7 @@ function query($query)
 // Membuat fungsi tambah
 function tambah($data)
 {
-    global $koneksi;
+    global $koneksi, $jurusan_nis_prefixes;
 
     $nis = htmlspecialchars($data['nis']);
     $nama = htmlspecialchars($data['nama']);
@@ -128,6 +137,25 @@ function tambah($data)
         return 2; // Mengembalikan 0 karena NIS duplikat
     }
 
+    //validasi nis 10 digit
+    if (strlen($nis) !== 10 || !ctype_digit($nis)) {
+        echo "<script>/* SweetAlert: Format NIS Salah */</script>";
+        return 0;
+    }
+
+    // Validasi 4 digit awal NIS sesuai jurusan
+    if (array_key_exists($jurusan, $jurusan_nis_prefixes)) {
+        $expected_prefix = $jurusan_nis_prefixes[$jurusan];
+        $nis_prefix = substr($nis, 0, 4); // Ambil 4 digit pertama NIS
+        if ($nis_prefix !== $expected_prefix) {
+            echo "<script>/* SweetAlert: NIS Tidak Sesuai Jurusan */</script>";
+            return 0;
+        }
+    } else {
+        echo "<script>/* SweetAlert: Jurusan Tidak Valid */</script>";
+        return 0;
+    }
+
     // Validasi format email
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         echo "<script>
@@ -143,6 +171,19 @@ function tambah($data)
                 });
              </script>";
         return 3; // Mengembalikan 0 karena format email salah
+    }
+
+    // Validasi IPK
+    $ipk_float = floatval($ipk); // Konversi ke float untuk validasi
+    if (!empty($ipk) && (!is_numeric($ipk) || $ipk_float < 0.00 || $ipk_float > 4.00)) {
+        echo "<script>/* SweetAlert: Format IPK Salah */</script>";
+        return 0;
+    }
+
+    // Validasi Jalur Masuk
+    if (empty($jalur_masuk)) {
+        echo "<script>/* SweetAlert: Jalur Masuk Kosong */</script>";
+        return 0;
     }
 
     // Panggil fungsi upload. FUNGSI UPLOAD SEKARANG MENGATASI KASUS TANPA GAMBAR
@@ -205,7 +246,7 @@ function hapus($nis)
 // Membuat fungsi ubah
 function ubah($data)
 {
-    global $koneksi;
+    global $koneksi, $jurusan_nis_prefixes;
 
     $nis = $data['nis']; // NIS tidak diubah
     $nama = htmlspecialchars($data['nama']);
@@ -222,6 +263,24 @@ function ubah($data)
 
     $gambarLama = htmlspecialchars($data['gambarLama']);
 
+    if (strlen($nis) !== 10 || !ctype_digit($nis)) {
+        echo "<script>/* SweetAlert: Format NIS Salah */</script>";
+        return 0;
+    }
+
+    // Validasi 4 digit awal NIS sesuai jurusan
+    if (array_key_exists($jurusan, $jurusan_nis_prefixes)) {
+        $expected_prefix = $jurusan_nis_prefixes[$jurusan];
+        $nis_prefix = substr($nis, 0, 4); // Ambil 4 digit pertama NIS
+        if ($nis_prefix !== $expected_prefix) {
+            echo "<script>/* SweetAlert: NIS Tidak Sesuai Jurusan */</script>";
+            return 0;
+        }
+    } else {
+        echo "<script>/* SweetAlert: Jurusan Tidak Valid */</script>";
+        return 0;
+    }
+    
     // Validasi format email
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         echo "<script>
@@ -237,6 +296,19 @@ function ubah($data)
                 });
              </script>";
         return 0; // Mengembalikan 0 karena format email salah
+    }
+
+    // Validasi IPK
+    $ipk_float = floatval($ipk); // Konversi ke float untuk validasi
+    if (!empty($ipk) && (!is_numeric($ipk) || $ipk_float < 0.00 || $ipk_float > 4.00)) {
+        echo "<script>/* SweetAlert: Format IPK Salah */</script>";
+        return 0;
+    }
+
+    // Validasi Jalur Masuk
+    if (empty($jalur_masuk)) {
+        echo "<script>/* SweetAlert: Jalur Masuk Kosong */</script>";
+        return 0;
     }
 
     // Cek apakah ada file gambar baru yang diunggah
@@ -470,8 +542,7 @@ function registrasi($data)
 
                 // DIHAPUS: header('location:index.php');
                 // DIHAPUS: exit;
-                record_counter('logins_total', 'Total login attempts', ['status' => 'success']);
-                push_metrics();
+                
                 // DIGANTI: Kembalikan 'true' untuk menandakan sukses
                 return true;
             }
