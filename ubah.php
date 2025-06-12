@@ -18,6 +18,18 @@ $nis_to_edit = isset($_GET['nis']) ? mysqli_real_escape_string($koneksi, $_GET['
 // Menggunakan fungsi query() yang sudah ada
 $siswa = query("SELECT * FROM siswa WHERE nis = '$nis_to_edit'");
 
+$old_jurusan = ''; // Inisialisasi default
+if (!empty($siswa)) {
+    // Asumsi $siswa adalah array yang berisi satu baris data
+    // Jadi kita ambil elemen pertama (indeks 0) dari array $siswa
+    // Dan kemudian ambil nilai dari kolom 'jurusan'
+    $old_jurusan = $siswa[0]['jurusan'];
+} else {
+    // Handle jika siswa tidak ditemukan (misalnya, redirect atau tampilkan pesan error)
+    echo "Data siswa dengan NIS " . htmlspecialchars($nis_to_edit) . " tidak ditemukan.";
+    // Mungkin Anda ingin menghentikan eksekusi script di sini
+    exit();
+}
 // Jika data tidak ditemukan, redirect atau tampilkan pesan error
 if (empty($siswa)) {
     // Menggunakan SweetAlert2 untuk pesan data tidak ditemukan
