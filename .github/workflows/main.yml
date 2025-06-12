@@ -78,6 +78,11 @@ jobs:
           DB_NAME=${{ env.DB_NAME }}
         flags: '--allow-unauthenticated'
 
+    - name: Show deployed URL on Success
+      if: success()
+      run: |
+        echo "🚀 Deployed to: ${{ steps.deploy.outputs.url }}"
+
     - name: Push SUCCESS metric to Pushgateway
       if: success()
       run: |
@@ -92,7 +97,4 @@ jobs:
         echo "my_app_last_deploy_timestamp_seconds{status=\"failure\", commit=\"${{ github.sha }}\"} $(date +%s)" | curl --data-binary @- http://34.101.208.120:9091/metrics/job/deploy_status/instance/${{ github.run_id }}
         echo "❌ Deployment Failed: Metric pushed to Pushgateway."
 
-    - name: Show deployed URL on Success
-      if: success()
-      run: |
-        echo "🚀 Deployed to: ${{ steps.deploy.outputs.url }}"
+    
