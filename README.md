@@ -22,7 +22,6 @@ Aplikasi ini memungkinkan administrator untuk mengelola data mahasiswa, termasuk
 * **Backend:** PHP (prosedural dengan `mysqli`)
 * **Database:** MySQL (dikelola oleh Google Cloud SQL)
 * **Frontend:** HTML, CSS, JavaScript
-    * Framework & Library: Bootstrap 5, jQuery, SweetAlert2, GSAP, DataTables, AOS (sebagian besar via CDN)
 * **Containerization:** Docker, `Dockerfile`
 * **CI/CD (Continuous Integration/Continuous Deployment):**
     * GitHub Actions (`.github/workflows/main.yml`)
@@ -33,14 +32,14 @@ Aplikasi ini memungkinkan administrator untuk mengelola data mahasiswa, termasuk
     * **Google Cloud Monitoring:** Untuk logging dan metrik dasar.
 * **Infrastructure as Code (IaC):**
     * Terraform (untuk memprovisikan resource GCP seperti Cloud SQL, Artifact Registry, Cloud Run Service).
-* **Database Migrations:**
-    * Phinx (untuk mengelola perubahan skema database).
 * **Unit Testing:**
     * PHPUnit (untuk pengujian unit kode PHP).
 * **Manajemen Dependensi PHP:**
     * Composer
 * **IDE (Lingkungan Pengembangan Lokal):**
     * Visual Studio Code (VS Code)
+* **Monitoring:**
+    * GCP Monitoring, Prometheus dan Grafana
 
 ## Penyiapan Proyek & Instalasi (Pengembangan Lokal)
 
@@ -48,7 +47,7 @@ Berikut adalah langkah-langkah untuk menjalankan proyek ini di lingkungan pengem
 
 1.  **Prasyarat:**
     * Git
-    * PHP (versi ^8.0 atau sesuai `composer.json`)
+    * PHP (versi ^8.2 atau sesuai `composer.json`)
     * Composer
     * Docker Desktop (atau Docker Engine untuk Linux)
     * Terraform CLI
@@ -145,24 +144,6 @@ Pipeline CI/CD diatur dalam file `.github/workflows/main.yml`.
     9.  **Push *Image Docker*:** *Image* diunggah ke Google Artifact Registry.
     10. **Deploy ke Google Cloud Run:** Layanan Cloud Run diperbarui dengan *image Docker* terbaru dan variabel lingkungan yang sesuai (termasuk kredensial database).
 
-## Database Migrations (Phinx)
-
-Perubahan skema database dikelola menggunakan Phinx. File migrasi disimpan di `db/migrations/`.
-
-* **Membuat File Migrasi Baru (Lokal):**
-    ```bash
-    vendor/bin/phinx create NamaMigrasiDeskriptifAnda
-    # Contoh: vendor/bin/phinx create AddStatusToSiswaTable
-    ```
-    Edit file PHP yang dihasilkan di `db/migrations/` untuk mendefinisikan perubahan skema Anda.
-
-* **Menjalankan Migrasi:**
-    * **Lokal (Development):**
-        ```bash
-        vendor/bin/phinx migrate -e development
-        ```
-    * **Cloud (Production):** Ditangani secara otomatis oleh pipeline CI/CD.
-
 ## Menjalankan Tes (PHPUnit)
 
 Tes unit disimpan di direktori `tests/`.
@@ -179,5 +160,3 @@ Tes unit disimpan di direktori `tests/`.
 ## Aplikasi yang Sudah Di-deploy
 
 Setelah pipeline CI/CD berhasil, aplikasi akan dapat diakses melalui URL yang disediakan oleh layanan Google Cloud Run Anda. Anda bisa melihat URL ini di detail layanan Cloud Run di GCP Console atau dari output Terraform jika dikonfigurasi.
-
-## Struktur Direktori Proyek (Ringkasan)
