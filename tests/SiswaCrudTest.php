@@ -14,7 +14,7 @@ class SiswaCrudTest extends DatabaseTestCase
         $this->dataSiswaValid = [
             'nis' => '5026221001', 'nama' => 'Budi Santoso', 'tmpt_Lahir' => 'Surabaya',
             'tgl_Lahir' => '2004-05-10', 'jekel' => 'Laki - Laki', 'jurusan' => 'Sistem Informasi',
-            'ipk' => 3.75, 'jalur_masuk' => 'SNBT', 'nilai' => 90,
+            'ipk' => 3.75, 'jalur_masuk' => 'SNBT',
             'email' => 'budi.santoso@example.com', 'alamat' => 'Jl. Kenjeran No. 123'
         ];
         $_FILES = [];
