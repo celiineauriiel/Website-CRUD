@@ -30,7 +30,7 @@ $siswa = query("SELECT * FROM siswa ORDER BY nis DESC");
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     <link rel="stylesheet" href="css/style.css">
 
-    <title>Dashboard | Aplikasi Data Mahasiswa</title>
+    <title>Dashboard | Aplikasi Data Mahasiswa ITS</title>
 </head>
 
 <body>
