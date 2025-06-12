@@ -36,7 +36,7 @@ $siswa = query("SELECT * FROM siswa ORDER BY nis DESC");
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm text-uppercase fixed-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="index.php">Sistem Admin Data Mahasiswa</a>
+            <a class="navbar-brand fw-bold" href="index.php">Sistem Admin Data Mahasiswa ITS</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -93,7 +93,7 @@ $siswa = query("SELECT * FROM siswa ORDER BY nis DESC");
                     <div class="card-body">
                         <div class="text-center mb-4">
                             <h2 class="card-title fw-bold text-primary mb-3" id="dataSiswaTitle"><i
-                                    class="bi bi-card-checklist"></i> DATA MAHASISWA</h2>
+                                    class="bi bi-card-checklist"></i> DATA MAHASISWA ITS</h2>
                             <p class="text-secondary">Daftar lengkap mahasiswa yang terdaftar dalam sistem.</p>
                         </div>
                         <hr class="mb-4">
