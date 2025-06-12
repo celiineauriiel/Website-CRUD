@@ -1,17 +1,16 @@
 <?php
-// File: monitoring.php
+// File: monitoring.php (Versi Debug)
 
-// SOLUSI: Pastikan baris ini ada di paling atas.
-// Baris ini memuat autoloader Composer agar semua kelas Prometheus dikenali.
+// Pastikan autoloader dimuat
 require __DIR__ . '/vendor/autoload.php';
 
 use Prometheus\CollectorRegistry;
 use Prometheus\Storage\InMemory;
-use PrometheusPushGateway\PushGateway;
-use Prometheus\Gauge;
+use Prometheus\PushGateway;
+// Tambahkan 'use' untuk Exception agar bisa ditangkap
+use GuzzleHttp\Exception\GuzzleException;
 
 function getRegistry() {
-    // Gunakan registry yang sama di seluruh request untuk konsistensi
     static $registry = null;
     if ($registry === null) {
         $registry = new CollectorRegistry(new InMemory());
@@ -19,28 +18,35 @@ function getRegistry() {
     return $registry;
 }
 
-// Fungsi untuk menambah counter
 function record_counter(string $name, string $help, array $labels = []) {
     $registry = getRegistry();
     $counter = $registry->getOrRegisterCounter('php', $name, $help, array_keys($labels));
     $counter->inc(array_values($labels));
 }
 
-// Fungsi untuk mengirim metrik ke Pushgateway
+// <<< FUNGSI YANG KITA MODIFIKASI SECARA SIGNIFIKAN >>>
 function push_metrics() {
-    // Ambil alamat Pushgateway dari environment variable
+    // Menulis log ke Cloud Run Logs
+    error_log("DEBUG: Fungsi push_metrics() DIPANGGIL.");
+
     $pushgatewayAddress = getenv('PROMETHEUS_PUSHGATEWAY_ADDRESS');
     if (!$pushgatewayAddress) {
-        // Jangan lakukan apa-apa jika tidak dikonfigurasi
+        error_log("DEBUG: GAGAL. Environment variable 'PROMETHEUS_PUSHGATEWAY_ADDRESS' tidak ditemukan.");
         return;
     }
+    error_log("DEBUG: Alamat Pushgateway ditemukan: " . $pushgatewayAddress);
 
     $registry = getRegistry();
-    // Baris di bawah inilah yang menyebabkan error jika kelasnya tidak ditemukan
     $pushGateway = new PushGateway($pushgatewayAddress);
-    // 'php_app' adalah nama job, 'instance_id' bisa di-generate secara acak
-    // atau menggunakan variabel dari Cloud Run jika tersedia.
-    $pushGateway->push($registry, 'php_app', ['instance_id' => 'cloud_run']);
-}
 
+    try {
+        error_log("DEBUG: Mencoba mengirim metrik ke Pushgateway...");
+        $pushGateway->push($registry, 'php_app', ['instance_id' => 'cloud_run']);
+        error_log("DEBUG: SUKSES. Metrik berhasil dikirim.");
+
+    } catch (GuzzleException $e) {
+        // Menangkap SEMUA kemungkinan error dari Guzzle (library HTTP)
+        error_log("DEBUG: GAGAL MENGIRIM METRIK. Exception: " . $e->getMessage());
+    }
+}
 ?>
