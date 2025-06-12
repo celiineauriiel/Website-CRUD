@@ -205,11 +205,12 @@ if (isset($_POST['ubah'])) {
                                 <label for="jurusan" class="form-label">Jurusan <span class="text-danger">*</span></label>
                                 <select class="form-select" id="jurusan" name="jurusan" required>
                                     <option value="">Pilih Jurusan</option>
-                                    <?php foreach ($jurusan_nis_prefixes as $jurusan_nama => $prefix): ?>
-                                        <option value="<?= $jurusan_nama ?>" <?= ($siswa_data['jurusan'] == $jurusan_nama) ? 'selected' : ''; ?>>
-                                            <?= $jurusan_nama ?> (NIS Depan: <?= $prefix ?>)
-                                        </option>
-                                    <?php endforeach; ?>
+                                    <option value="Teknik Elektro" <?= ($old_jurusan == 'Teknik Elektro') ? 'selected' : ''; ?>>Teknik Elektro</option>
+                                    <option value="Teknik Biomedik" <?= ($old_jurusan == 'Teknik Biomedik') ? 'selected' : ''; ?>>Teknik Biomedik</option>
+                                    <option value="Teknik Komputer" <?= ($old_jurusan == 'Teknik Komputer') ? 'selected' : ''; ?>>Teknik Komputer</option>
+                                    <option value="Teknik Informatika" <?= ($old_jurusan == 'Teknik Informatika') ? 'selected' : ''; ?>>Teknik Informatika</option>
+                                    <option value="Sistem Informasi" <?= ($old_jurusan == 'Sistem Informasi') ? 'selected' : ''; ?>>Sistem Informasi</option>
+                                    <option value="Teknologi Informasi" <?= ($old_jurusan == 'Teknologi Informasi') ? 'selected' : ''; ?>>Teknologi Informasi</option>
                                 </select>
                             </div>
                             <div class="mb-3">
