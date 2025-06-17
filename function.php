@@ -192,7 +192,7 @@ function hapus($nis)
 {
     global $koneksi;
 
-    // mysqli_query($koneksi, "DELETE FROM siswa WHERE nis = '$nis'");
+    mysqli_query($koneksi, "DELETE FROM siswa WHERE nis = '$nis'");
 
     if (mysqli_error($koneksi)) {
         error_log("Delete Query Gagal: " . mysqli_error($koneksi) . " NIS: " . $nis);
