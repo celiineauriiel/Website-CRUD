@@ -188,7 +188,7 @@ function tambah($data)
 }
 
 // Membuat fungsi hapus
-function hapus($nis)
+// function hapus($nis)
 {
     global $koneksi;
 
