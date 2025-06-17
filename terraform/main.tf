@@ -1,3 +1,97 @@
+# Mengaktifkan API yang dibutuhkan oleh semua resource
+resource "google_project_service" "compute" {
+  project = var.gcp_project_id
+  service = "compute.googleapis.com"
+}
+resource "google_project_service" "sqladmin" {
+  project = var.gcp_project_id
+  service = "sqladmin.googleapis.com"
+}
+resource "google_project_service" "artifactregistry" {
+  project = var.gcp_project_id
+  service = "artifactregistry.googleapis.com"
+}
+resource "google_project_service" "run" {
+  project = var.gcp_project_id
+  service = "run.googleapis.com"
+}
+
+# Membuat VM (Virtual Machine) di Google Compute Engine
+resource "google_compute_instance" "monitoring_vm" {
+  project      = var.gcp_project_id
+  name         = var.monitoring_vm_name
+  machine_type = var.monitoring_vm_type
+  zone         = var.gcp_zone
+
+  # Memberi 'tag' agar aturan firewall bisa diterapkan
+  tags = ["monitoring-server"]
+
+  boot_disk {
+    initialize_params {
+      image = "ubuntu-os-cloud/ubuntu-2204-lts" # Menggunakan image Ubuntu
+    }
+  }
+
+  network_interface {
+    network = "default"
+    access_config {
+      // Dikosongkan agar GCP memberikan alamat IP eksternal secara otomatis
+    }
+  }
+
+  # Skrip yang berjalan otomatis saat VM pertama kali dibuat
+  # untuk menginstal Docker dan Docker Compose.
+  metadata_startup_script = <<-EOT
+    #!/bin/bash
+    # Update sistem & install prasyarat
+    apt-get update -y
+    apt-get install -y ca-certificates curl gnupg
+    
+    # Tambahkan GPG key resmi Docker
+    install -m 0755 -d /etc/apt/keyrings
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    chmod a+r /etc/apt/keyrings/docker.gpg
+    
+    # Tambahkan repositori Docker
+    echo \
+      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+      $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+      tee /etc/apt/sources.list.d/docker.list > /dev/null
+      
+    # Update lagi dengan repo Docker baru & install
+    apt-get update -y
+    apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+  EOT
+
+  depends_on = [google_project_service.compute]
+}
+
+# Membuat Aturan Firewall untuk Grafana (Port 3000)
+resource "google_compute_firewall" "allow_grafana" {
+  project = var.gcp_project_id
+  name    = "allow-grafana-ingress"
+  network = "default"
+  allow {
+    protocol = "tcp"
+    ports    = ["3000"]
+  }
+  source_ranges = ["0.0.0.0/0"] # Izinkan dari semua alamat IP
+  target_tags   = ["monitoring-server"]
+}
+
+# Membuat Aturan Firewall untuk Prometheus Pushgateway (Port 9091)
+resource "google_compute_firewall" "allow_pushgateway" {
+  project = var.gcp_project_id
+  name    = "allow-pushgateway-ingress"
+  network = "default"
+  allow {
+    protocol = "tcp"
+    ports    = ["9091"]
+  }
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["monitoring-server"]
+}
+
 # cloud_sql.tf
 resource "google_sql_database_instance" "default" {
   name             = var.db_instance_name

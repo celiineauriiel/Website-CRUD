@@ -9,6 +9,24 @@ variable "gcp_region" {
   default     = "asia-southeast2" 
 }
 
+variable "gcp_zone" {
+  description = "Zona GCP untuk resource seperti VM (misalnya, asia-southeast2-a)."
+  type        = string
+  default     = "asia-southeast2-a"
+}
+
+variable "monitoring_vm_name" {
+  description = "Nama untuk VM server monitoring."
+  type        = string
+  default     = "monitoring-server"
+}
+
+variable "monitoring_vm_type" {
+  description = "Tipe mesin untuk VM monitoring."
+  type        = string
+  default     = "e2-medium"
+}
+
 variable "db_instance_name" {
   description = "Nama untuk instance Cloud SQL."
   type        = string
