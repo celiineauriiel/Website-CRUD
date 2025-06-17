@@ -11,10 +11,6 @@ resource "google_project_service" "artifactregistry" {
   project = var.gcp_project_id
   service = "artifactregistry.googleapis.com"
 }
-resource "google_project_service" "run" {
-  project = var.gcp_project_id
-  service = "run.googleapis.com"
-}
 
 # Membuat VM (Virtual Machine) di Google Compute Engine
 resource "google_compute_instance" "monitoring_vm" {
