@@ -98,15 +98,12 @@ Berikut adalah langkah-langkah untuk menjalankan aplikasi ini di lingkungan peng
    * Buat project di GCP
    * Install terraform CLI
    * Jalankan
-      ```bash
     terraform init
     ```
    * Jalankan
-      ```bash
     terraform plan -var="gcp_project_id=[ID_PROYEK_GCP_ANDA]" -var="db_password=[PASSWORD_DB_RAHASIA_UNTUK_APP_USER]"
     ```
    * Jalankan
-      ```bash
     terraform apply -var="gcp_project_id=[ID_PROYEK_GCP_ANDA]" -var="db_password=[PASSWORD_DB_RAHASIA_UNTUK_APP_USER]"
     ```
 ## Alur Kerja CI/CD (GitHub Actions)
