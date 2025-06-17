@@ -79,7 +79,7 @@ Berikut adalah langkah-langkah untuk menjalankan aplikasi ini di lingkungan peng
     ```
 
 4.  **Konfigurasi Database Lokal:**
-    * Buat sebuah database MySQL baru di server lokal Anda (misalnya, `Data_siswa_dev`).
+    * Buat sebuah database MySQL baru di server lokal Anda (misalnya, `Data_siswa`).
     * Pastikan file `function.php` Anda memiliki logika *fallback* untuk terhubung ke database lokal.
 
 5.  **Impor Skema dan Data Database Lokal:**
@@ -122,3 +122,40 @@ Tes unit disimpan di direktori `tests/`.
 ## Aplikasi yang Sudah Di-deploy
 
 Setelah pipeline CI/CD berhasil, aplikasi akan dapat diakses melalui URL yang disediakan oleh layanan Google Cloud Run Anda.
+
+---
+
+## Tantangan & Pemecahan Masalah (Problem Solving Journey)
+
+Selama pengembangan proyek ini, beberapa tantangan teknis muncul. Berikut adalah catatan mengenai masalah yang dihadapi dan solusinya.
+
+### 1. Masalah Koneksi dan Otentikasi
+* **Masalah:** Mengalami kesulitan menghubungkan berbagai layanan (seperti Terraform dan PHPUnit lokal) ke Google Cloud Platform, yang menghasilkan error seperti `could not find default credentials` dan `Access denied`.
+* **Solusi:**
+    * **Membuat Service Account Khusus:** Untuk setiap kebutuhan (Terraform, CI/CD), dibuatkan Service Account terpisah di GCP dengan izin yang spesifik (Prinsip Hak Akses Minimal).
+    * **Menggunakan Kunci JSON:** Kunci JSON dari Service Account diunduh dan digunakan untuk otentikasi.
+    * **Mengatur Variabel Lingkungan:** Untuk pengembangan lokal, variabel lingkungan `GOOGLE_APPLICATION_CREDENTIALS` diatur secara permanen di Windows agar menunjuk ke lokasi file kunci JSON, yang menyelesaikan masalah otentikasi Terraform.
+
+### 2. Error pada Pipeline CI/CD di GitHub Actions
+* **Masalah:** Pipeline awal gagal di beberapa langkah, seperti tidak menemukan `Dockerfile` atau mengalami masalah versi dependensi.
+* **Solusi:**
+    * **Struktur Direktori:** Memastikan `Dockerfile` dan direktori `.github/workflows` berada di *root* proyek.
+    * **Konflik Versi PHP:** Error terjadi karena versi PHPUnit yang ditentukan di `composer.lock` membutuhkan versi PHP yang lebih tinggi (`>=8.1`) daripada yang dikonfigurasi di pipeline (`8.0`). Solusinya adalah menyamakan versi PHP di pipeline GitHub Actions (`.github/workflows/main.yml`) dengan yang dibutuhkan oleh dependensi.
+
+### 3. Kegagalan Pengujian Otomatis dengan PHPUnit
+* **Masalah:** Saat menjalankan `composer test`, muncul banyak error fatal (`Cannot redeclare query()`) dan kegagalan tes (`Failed asserting that 0 matches expected 1`).
+* **Solusi:**
+    * **Menggunakan `require_once`:** Akar masalahnya adalah penggunaan `require 'function.php';` di banyak file, yang menyebabkan file dimuat berulang kali dan koneksi database ter-reset selama tes. Solusinya adalah mengganti semua `require` menjadi `require_once` di seluruh file aplikasi.
+    * **Modernisasi `function.php`:** Kode di `function.php` di-refactor secara signifikan. Sebuah fungsi pusat `get_db_connection()` dibuat untuk mengelola koneksi database secara konsisten (menggunakan *Singleton Pattern*). Semua fungsi lain kemudian diubah untuk memanggil fungsi pusat ini, menghilangkan ketergantungan pada variabel global `$koneksi`.
+    * **Keamanan Database:** Fungsi-fungsi diubah untuk menggunakan **Prepared Statements** (`mysqli_prepare`, `mysqli_stmt_bind_param`, `mysqli_stmt_execute`) untuk mencegah serangan SQL Injection, dan menggunakan `password_hash()` serta `password_verify()` untuk manajemen password yang aman, menggantikan `md5()`.
+    * **Menggunakan Database Tes:** Awalnya ada keraguan, namun akhirnya disepakati untuk menggunakan database terpisah (`Data_siswa_test`) khusus untuk pengujian. Ini memastikan data asli tidak pernah terganggu dan hasil tes selalu konsisten karena setiap tes dimulai dari keadaan bersih (`TRUNCATE TABLE`).
+
+### 4. Konfigurasi Terraform
+* **Masalah:** Saat menjalankan `terraform plan`, muncul error `Missing required argument "service"` dan `Unsupported argument "name"` pada resource IAM Cloud Run.
+* **Solusi:** Berdasarkan dokumentasi Terraform, blok resource `google_cloud_run_service_iam_member` diperbaiki dengan mengganti argumen `name` menjadi `service` untuk mereferensikan nama layanan Cloud Run dengan benar.
+
+Dengan menyelesaikan tantangan-tantangan ini, proyek ini menjadi lebih kuat, aman, dan memiliki alur kerja pengembangan yang profesional.
+
+## Link Dokumentasi
+Untuk Dokumentasi yang lebih Lengkap, dapat dilihat melalui link berikut:
+https://intip.in/DokumentasiKelompok11
