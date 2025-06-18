@@ -170,6 +170,10 @@ Selama pengembangan proyek ini, beberapa tantangan teknis muncul. Berikut adalah
 
 Dengan menyelesaikan tantangan-tantangan ini, proyek ini menjadi lebih kuat, aman, dan memiliki alur kerja pengembangan yang profesional.
 
+### Link Aplikasi
+Untuk mengakses aplikasi database mahasiswa ada pada link berikut
+https://datasiswa-76068092363.asia-southeast2.run.app/
+
 ## Link Dokumentasi
 Untuk Dokumentasi yang lebih Lengkap, dapat dilihat melalui link berikut:
 https://intip.in/DokumentasiKelompok11

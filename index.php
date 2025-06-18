@@ -44,9 +44,9 @@ $siswa = query("SELECT * FROM siswa ORDER BY nis DESC");
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="index.php">Home</a>
                     </li>
-                    <!-- add dashboard -->
+                    <!-- add dashboard
                     <li class="nav-item">
-                        <a class="nav-link" href="dashboard.php">Dashboard</a>
+                        <a class="nav-link" href="dashboard.php">Dashboard</a> -->
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#about">About</a>
